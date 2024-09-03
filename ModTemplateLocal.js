@@ -11,35 +11,47 @@
 "use strict";
 
 // Define a namespace for your mod to avoid conflicts
-window.modName = {};
+let modName = {};
 
 // Initialize settings or variables your mod might need
 modName.windowConfigs = {
     windowName: "Mod Name",
     windowId: "modNameWindow",
     modVersion: "1.0.0",
-    bonkLIBVersion: "1.0.8",
+    bonkLIBVersion: "1.1.0",
     bonkVersion: "49",
-    windowContent: "<div>A mod with a HUD!</div>", // HTML content for your window
+    windowContent: null,
 };
 
 // Create the mod window using BonkHUD
 modName.createWindow = function () {
-    // Define the window HTML content
-    const windowHTML = document.createElement("div");
-    windowHTML.innerHTML = this.windowConfigs.windowContent;
-
     // Create the window using BonkHUD
-    const modWindow = bonkHUD.createWindow(this.windowConfigs.windowName, windowHTML, {
-        modVersion: this.windowConfigs.modVersion,
-        bonkLIBVersion: this.windowConfigs.bonkLIBVersion,
-        bonkVersion: this.windowConfigs.bonkVersion,
-    });
+    const modWindow = bonkHUD.createWindow(
+                            this.windowConfigs.windowName,
+                            this.windowConfigs.windowContent, 
+                            this.windowConfigs );
 
-    // TODO: Customize window styles if needed
-    modWindow.style.width = "200px"; // Example: set width
-    modWindow.style.height = "150px"; // Example: set height
+    //! Possible: Customize inner window styles if needed
+    /* If you want to change padding
+    modWindow.style.padding = "5px"; // Example: set padding
+    modWindow.style.width = "calc(100% - 10px)"; // Example: set width to match padding
+    modWindow.style.height = "calc(100% - 42px)"; // Example: set height to match padding and header
+    */
+    // modWindow.style.display = "flex"; // Example: set display
 };
+
+modName.setWindowContent = function () {
+    // Create your window HTML
+    let windowHTML = document.createElement("div");
+
+    let modText = document.createElement("span");
+    modText.textContent = "A mod with text!";
+
+    windowHTML.appendChild(modText);
+
+    // Add to windowContent
+    this.windowConfigs.windowContent = windowHTML;
+}
 
 // Initialize the mod (run when document is ready)
 modName.initMod = function () {
@@ -49,13 +61,14 @@ modName.initMod = function () {
         return;
     }
 
-    // this.setWindowContent(); // TODO: Set window content if needed
+    this.setWindowContent();
     this.createWindow();
 
     // Load UI settings if available
     bonkHUD.loadUISetting(this.windowConfigs.windowId);
 
-    // this.addEventListeners(); // TODO: Add event listeners if needed
+    //! Possible: Add event listeners if needed
+    // bonkAPI.addEventListeners("event", (e) => {});
 
     console.log(this.windowConfigs.windowName + " initialized");
 };
