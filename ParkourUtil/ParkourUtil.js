@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         ParkourUtilsTemp
 // @namespace    http://tampermonkey.net/
-// @version      1.1.48
+// @version      1.2.0
 // @description  Parkour Utilities
 // @author       FeiFei
 // @license      MIT
@@ -15,11 +15,13 @@ window.pkrUtils = {}; // Namespace for encapsulating the UI functions and variab
 // Use 'strict' mode for safer code by managing silent errors
 'use strict';
 
-// Constants defining the initial position and size of the key table overlay
-const left = "0";
-const top = "0";
-const width = "172px";
-const height = "100px";
+pkrUtils.windowConfigs = {
+    windowName: "pkrUtils",
+    windowId: "pkr_utils_window",
+    modVersion: "1.2.0",
+    bonkLIBVersion: "1.1.1",
+    bonkVersion: "49",
+};
 
 pkrUtils.currentData = {};
 
@@ -364,7 +366,10 @@ const addPkrDiv = () => {
         </div>
         <div id="pkrutils_marker_hold" style="padding:10px"></div>`;
 
-    bonkHUD.createWindow("pkrUtils", "pkr_utils_window", "1.0.4", pkrDiv, "100px");
+    bonkHUD.createWindow(
+        pkrUtils.windowConfigs.windowName,
+        pkrDiv,
+        pkrUtils.windowConfigs);
     /*let keytable_window = document.getElementById("keytable_window");
     keytable_window.style.width = "100%";
     keytable_window.style.height = "calc(100% - 32px)";

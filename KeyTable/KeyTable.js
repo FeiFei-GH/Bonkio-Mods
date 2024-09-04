@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         KeyTable
-// @version      1.3.0
+// @version      1.4.1
 // @description  Add a customizable key table overlay to the bonk.io game
 // @author       BZD + Clarifi
 // @namespace    http://tampermonkey.net/
@@ -16,11 +16,13 @@ window.KeyTable = {}; // Namespace for encapsulating the UI functions and variab
 // Use 'strict' mode for safer code by managing silent errors
 'use strict';
 
-// Constants defining the initial position and size of the key table overlay
-const left = "0";
-const top = "0";
-const width = "172px";
-const height = "100px";
+KeyTable.windowConfigs = {
+    windowName: "KeyTable",
+    windowId: "keytable_window",
+    modVersion: "1.4.1",
+    bonkLIBVersion: "1.1.1",
+    bonkVersion: "49",
+};
 
 // Variable to track the most recent key input by the user
 KeyTable.latestInput = 0;
@@ -343,8 +345,13 @@ const addKeyTable = () => {
     downInput.onchange = saveFunction;
     rightInput.onchange = saveFunction;
 
-    bonkHUD.createWindow("KeyTable", "1.0.4", "keytable_window", keyTable, keyTableSettings);
-    let keytable_window = document.getElementById("keytable_window");
+    KeyTable.windowConfigs.settingsContent = keyTableSettings;
+
+    let keytable_window = bonkHUD.createWindow(
+        KeyTable.windowConfigs.windowName,
+        keyTable,
+        KeyTable.windowConfigs
+    );
     keytable_window.style.width = "100%";
     keytable_window.style.height = "calc(100% - 32px)";
     keytable_window.style.padding = "0";
