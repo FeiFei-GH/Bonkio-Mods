@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         KeyTable
-// @version      1.4.0
+// @version      1.4.1
 // @description  Add a customizable key table overlay to the bonk.io game
 // @author       BZD + Clarifi
 // @namespace    http://tampermonkey.net/
@@ -19,10 +19,9 @@ window.KeyTable = {}; // Namespace for encapsulating the UI functions and variab
 KeyTable.windowConfigs = {
     windowName: "KeyTable",
     windowId: "keytable_window",
-    modVersion: "1.4.0",
+    modVersion: "1.4.1",
     bonkLIBVersion: "1.1.1",
     bonkVersion: "49",
-    windowContent: null,
 };
 
 // Variable to track the most recent key input by the user
