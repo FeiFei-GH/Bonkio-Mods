@@ -21,27 +21,33 @@ modName.windowConfigs = {
     bonkLIBVersion: "1.1.0",
     bonkVersion: "49",
     windowContent: null,
+    //settingsContent: null,
+    //noWindow: false,
 };
 
 // Create the mod window using BonkHUD
 modName.createWindow = function () {
     // Create the window using BonkHUD
-    const modWindow = bonkHUD.createWindow(
-                            this.windowConfigs.windowName,
-                            this.windowConfigs.windowContent, 
+    const modIndex = bonkHUD.createMod(
+                            this.windowConfigs.windowName, 
                             this.windowConfigs );
 
     //! Possible: Customize inner window style if needed
+    // let modWindow = bonkHUD.getElementByIndex(modIndex);
     /* If you want to change padding
     modWindow.style.padding = "5px"; // Example: set padding
     modWindow.style.width = "calc(100% - 10px)"; // Example: set width to match padding
     modWindow.style.height = "calc(100% - 42px)"; // Example: set height to match padding and header
     */
     // modWindow.style.display = "flex"; // Example: set display
+
+    // Implement functionality for settings
+    // this.setSettingFunctionality(modIndex);
 };
 
 modName.setWindowContent = function () {
     // Create your window HTML
+    // Possibly create your default settings HTML
     let windowHTML = document.createElement("div");
 
     let modText = document.createElement("span");
@@ -51,6 +57,16 @@ modName.setWindowContent = function () {
 
     // Add to windowContent
     this.windowConfigs.windowContent = windowHTML;
+    // this.windowConfigs.settingsContent = ...;
+}
+
+modName.setSettingFunctionality = function (modIndex) {
+    // Access elements from settings with id and then add events/input
+    // Put settings you want to save into an object
+    // Use bonkHUD.saveModSetting(modIndex, settings) to save
+    // Use let mySettings = bonkHUD.getModSetting(modIndex) to retreive settings object
+    // Use bonkHUD.resetModSetting(modIndex) to DELETE your current saved settings
+    //! How the settings object is used depends on the mod maker
 }
 
 // Initialize the mod (run when document is ready)
