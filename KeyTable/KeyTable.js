@@ -19,8 +19,8 @@ window.KeyTable = {}; // Namespace for encapsulating the UI functions and variab
 KeyTable.windowConfigs = {
     windowName: "KeyTable",
     windowId: "keytable_window",
-    modVersion: "1.4.1",
-    bonkLIBVersion: "1.1.1",
+    modVersion: "1.4.2",
+    bonkLIBVersion: "1.1.3",
     bonkVersion: "49",
 };
 

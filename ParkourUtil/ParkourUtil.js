@@ -18,8 +18,8 @@ window.pkrUtils = {}; // Namespace for encapsulating the UI functions and variab
 pkrUtils.windowConfigs = {
     windowName: "pkrUtils",
     windowId: "pkr_utils_window",
-    modVersion: "1.2.0",
-    bonkLIBVersion: "1.1.1",
+    modVersion: "1.2.1",
+    bonkLIBVersion: "1.1.3",
     bonkVersion: "49",
 };
 
