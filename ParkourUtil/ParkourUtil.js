@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         ParkourUtilsTemp
 // @namespace    http://tampermonkey.net/
-// @version      1.2.0
+// @version      1.2.1
 // @description  Parkour Utilities
 // @author       FeiFei
 // @license      MIT
