@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         ParkourUtilsTemp
 // @namespace    http://tampermonkey.net/
-// @version      1.2.0
+// @version      1.2.1
 // @description  Parkour Utilities
 // @author       FeiFei
 // @license      MIT
@@ -18,8 +18,8 @@ window.pkrUtils = {}; // Namespace for encapsulating the UI functions and variab
 pkrUtils.windowConfigs = {
     windowName: "pkrUtils",
     windowId: "pkr_utils_window",
-    modVersion: "1.2.0",
-    bonkLIBVersion: "1.1.1",
+    modVersion: "1.2.1",
+    bonkLIBVersion: "1.1.3",
     bonkVersion: "49",
 };
 
@@ -366,7 +366,7 @@ const addPkrDiv = () => {
         </div>
         <div id="pkrutils_marker_hold" style="padding:10px"></div>`;
 
-    bonkHUD.createWindow(
+    let pkrIndex = bonkHUD.createWindow(
         pkrUtils.windowConfigs.windowName,
         pkrDiv,
         pkrUtils.windowConfigs);
@@ -411,7 +411,7 @@ const addPkrDiv = () => {
     pkrUtils.arrowCharge = document.getElementById("pkrutils_ds");
     pkrUtils.arrowAngle = document.getElementById("pkrutils_da");
 
-    bonkHUD.loadUISetting("pkr_utils_window");
+    bonkHUD.loadUISetting(pkrIndex);
 };
 
 // Initialization logic to set up the UI once the document is ready

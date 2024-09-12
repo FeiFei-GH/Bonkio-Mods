@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         KeyTable
-// @version      1.4.1
+// @version      1.4.2
 // @description  Add a customizable key table overlay to the bonk.io game
 // @author       BZD + Clarifi
 // @namespace    http://tampermonkey.net/
@@ -19,8 +19,8 @@ window.KeyTable = {}; // Namespace for encapsulating the UI functions and variab
 KeyTable.windowConfigs = {
     windowName: "KeyTable",
     windowId: "keytable_window",
-    modVersion: "1.4.1",
-    bonkLIBVersion: "1.1.1",
+    modVersion: "1.4.2",
+    bonkLIBVersion: "1.1.3",
     bonkVersion: "49",
 };
 
@@ -318,6 +318,39 @@ const addKeyTable = () => {
     keyTableSettings.appendChild(inputTopRow);
     keyTableSettings.appendChild(inputBottomRow);
 
+    KeyTable.windowConfigs.settingsContent = keyTableSettings;
+
+    let keytable_index = bonkHUD.createWindow(
+        KeyTable.windowConfigs.windowName,
+        keyTable,
+        KeyTable.windowConfigs
+    );
+    let keytable_window = bonkHUD.getElementByIndex(keytable_index);
+    keytable_window.style.width = "100%";
+    keytable_window.style.height = "calc(100% - 32px)";
+    keytable_window.style.padding = "0";
+    keytable_window.style.display = "flex";
+    keytable_window.style.flexFlow = "column";
+
+    bonkHUD.loadUISetting(keytable_index);
+
+    let recoveredSetting = bonkHUD.getModSetting(keytable_index);
+    if(recoveredSetting) {
+        KeyTable.keys["heavy"].textContent = recoveredSetting["heavy"];
+        KeyTable.keys["up"].textContent = recoveredSetting["up"];
+        KeyTable.keys["special"].textContent = recoveredSetting["special"];
+        KeyTable.keys["left"].textContent = recoveredSetting["left"];
+        KeyTable.keys["down"].textContent = recoveredSetting["down"];
+        KeyTable.keys["right"].textContent = recoveredSetting["right"];
+
+        heavyInput.value = recoveredSetting["heavy"];
+        upInput.value = recoveredSetting["up"];
+        specialInput.value = recoveredSetting["special"];
+        leftInput.value = recoveredSetting["left"];
+        downInput.value = recoveredSetting["down"];
+        rightInput.value = recoveredSetting["right"];
+    }
+
     let saveFunction = function() {
         let setting = {
             "heavy": heavyInput.value,
@@ -327,7 +360,7 @@ const addKeyTable = () => {
             "down": downInput.value,
             "right": rightInput.value,
         };
-        bonkHUD.saveModSetting("keytable_window", setting);
+        bonkHUD.saveModSetting(keytable_index, setting);
 
         KeyTable.keys["heavy"].textContent = heavyInput.value;
         KeyTable.keys["up"].textContent = upInput.value;
@@ -344,38 +377,6 @@ const addKeyTable = () => {
     leftInput.onchange = saveFunction;
     downInput.onchange = saveFunction;
     rightInput.onchange = saveFunction;
-
-    KeyTable.windowConfigs.settingsContent = keyTableSettings;
-
-    let keytable_window = bonkHUD.createWindow(
-        KeyTable.windowConfigs.windowName,
-        keyTable,
-        KeyTable.windowConfigs
-    );
-    keytable_window.style.width = "100%";
-    keytable_window.style.height = "calc(100% - 32px)";
-    keytable_window.style.padding = "0";
-    keytable_window.style.display = "flex";
-    keytable_window.style.flexFlow = "column";
-
-    bonkHUD.loadUISetting("keytable_window");
-
-    let recoveredSetting = bonkHUD.getModSetting("keytable_window");
-    if(recoveredSetting) {
-        KeyTable.keys["heavy"].textContent = recoveredSetting["heavy"];
-        KeyTable.keys["up"].textContent = recoveredSetting["up"];
-        KeyTable.keys["special"].textContent = recoveredSetting["special"];
-        KeyTable.keys["left"].textContent = recoveredSetting["left"];
-        KeyTable.keys["down"].textContent = recoveredSetting["down"];
-        KeyTable.keys["right"].textContent = recoveredSetting["right"];
-
-        heavyInput.value = recoveredSetting["heavy"];
-        upInput.value = recoveredSetting["up"];
-        specialInput.value = recoveredSetting["special"];
-        leftInput.value = recoveredSetting["left"];
-        downInput.value = recoveredSetting["down"];
-        rightInput.value = recoveredSetting["right"];
-    }
 
     // Initialize the key styles
     KeyTable.updateKeyStyles();
