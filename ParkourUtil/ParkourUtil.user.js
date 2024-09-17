@@ -3,7 +3,7 @@
 // @namespace    http://tampermonkey.net/
 // @version      1.2.1
 // @description  Parkour Utilities
-// @author       FeiFei
+// @author       Clarifi
 // @license      MIT
 // @match        https://bonk.io/gameframe-release.html
 // @run-at       document-end
