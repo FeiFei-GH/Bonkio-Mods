@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         Opacity
-// @version      2.0.0
+// @version      2.2.0
 // @description  A mod to toggle visibility settings in Bonk.io using BonkHUD
 // @author       FeiFei + Blu
 // @match        https://bonk.io/gameframe-release.html
@@ -15,14 +15,14 @@ window.opacity = {};
 opacity.windowConfigs = {
     windowName: "Opacity",
     windowId: "opacity_window",
-    modVersion: "2.0.0",
+    modVersion: "2.2.0",
     bonkLIBVersion: "1.1.3",
     bonkVersion: "49",
     windowContent: null,
 };
 
-// Initialize settings
-opacity.settings = {
+// Initialize default settings
+opacity.defaultSettings = {
     players: {
         skins: true,
         visible: true,
@@ -31,11 +31,36 @@ opacity.settings = {
             visible: true,
             alpha: 1,
         },
+        teamOutline: {
+            visible: true,
+            alpha: 1,
+        },
     },
     chat: {
         visible: true,
         alpha: 1,
     },
+};
+
+// Initialize settings
+opacity.settings = JSON.parse(JSON.stringify(opacity.defaultSettings));
+
+// Function to save settings to localStorage
+opacity.saveSettings = function () {
+    localStorage.setItem('opacitySettings', JSON.stringify(this.settings));
+};
+
+// Function to load settings from localStorage
+opacity.loadSettings = function () {
+    const savedSettings = localStorage.getItem('opacitySettings');
+    if (savedSettings) {
+        try {
+            this.settings = JSON.parse(savedSettings);
+        } catch (e) {
+            console.error('Failed to parse saved settings:', e);
+            this.settings = JSON.parse(JSON.stringify(this.defaultSettings));
+        }
+    }
 };
 
 // Create the mod window using BonkHUD
@@ -54,6 +79,8 @@ opacity.setWindowContent = function () {
     const playersAlphaValue = this.settings.players.alpha * 100;
     const usernamesVisibleChecked = this.settings.players.usernames.visible ? "checked" : "";
     const usernamesAlphaValue = this.settings.players.usernames.alpha * 100;
+    const teamOutlineVisibleChecked = this.settings.players.teamOutline.visible ? "checked" : "";
+    const teamOutlineAlphaValue = this.settings.players.teamOutline.alpha * 100;
     const chatVisibleChecked = this.settings.chat.visible ? "checked" : "";
     const chatAlphaValue = this.settings.chat.alpha * 100;
 
@@ -70,7 +97,7 @@ opacity.setWindowContent = function () {
                     <input
                         type="checkbox"
                         ${playersSkinsChecked}
-                        onchange="window.opacity.settings.players.skins = this.checked"
+                        onchange="window.opacity.settings.players.skins = this.checked; window.opacity.saveSettings();"
                     />
                 </td>
             </tr>
@@ -80,7 +107,7 @@ opacity.setWindowContent = function () {
                     <input
                         type="checkbox"
                         ${playersVisibleChecked}
-                        onchange="window.opacity.settings.players.visible = this.checked"
+                        onchange="window.opacity.settings.players.visible = this.checked; window.opacity.saveSettings();"
                     />
                 </td>
             </tr>
@@ -93,7 +120,7 @@ opacity.setWindowContent = function () {
                         min="0"
                         max="100"
                         value="${playersAlphaValue}"
-                        oninput="window.opacity.settings.players.alpha = this.value/100"
+                        oninput="window.opacity.settings.players.alpha = this.value/100; window.opacity.saveSettings();"
                     />
                 </td>
             </tr>
@@ -110,7 +137,7 @@ opacity.setWindowContent = function () {
                                 <input
                                     type="checkbox"
                                     ${usernamesVisibleChecked}
-                                    onchange="window.opacity.settings.players.usernames.visible = this.checked"
+                                    onchange="window.opacity.settings.players.usernames.visible = this.checked; window.opacity.saveSettings();"
                                 />
                             </td>
                         </tr>
@@ -123,12 +150,46 @@ opacity.setWindowContent = function () {
                                     min="0"
                                     max="100"
                                     value="${usernamesAlphaValue}"
-                                    oninput="window.opacity.settings.players.usernames.alpha = this.value/100"
+                                    oninput="window.opacity.settings.players.usernames.alpha = this.value/100; window.opacity.saveSettings();"
                                 />
                             </td>
                         </tr>
                     </table>
                     <!-- End of Usernames Subsection -->
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2">
+                    <!-- Team Outline Subsection -->
+                    <table class="bonkhud-background-color bonkhud-border-color" style="margin-top: 10px">
+                        <caption class="bonkhud-header-color">
+                            <span class="bonkhud-title-color">Team Outline</span>
+                        </caption>
+                        <tr>
+                            <td class="bonkhud-text-color">Visible</td>
+                            <td>
+                                <input
+                                    type="checkbox"
+                                    ${teamOutlineVisibleChecked}
+                                    onchange="window.opacity.settings.players.teamOutline.visible = this.checked; window.opacity.saveSettings();"
+                                />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="bonkhud-text-color">Opacity</td>
+                            <td>
+                                <input
+                                    type="range"
+                                    style="width: 5vw"
+                                    min="0"
+                                    max="100"
+                                    value="${teamOutlineAlphaValue}"
+                                    oninput="window.opacity.settings.players.teamOutline.alpha = this.value/100; window.opacity.saveSettings();"
+                                />
+                            </td>
+                        </tr>
+                    </table>
+                    <!-- End of Team Outline Subsection -->
                 </td>
             </tr>
         </table>
@@ -143,7 +204,7 @@ opacity.setWindowContent = function () {
                     <input
                         type="checkbox"
                         ${chatVisibleChecked}
-                        onchange="window.opacity.settings.chat.visible = this.checked; if (window.opacity.chatWindow) { window.opacity.chatWindow.style.opacity = window.opacity.settings.chat.visible ? 1 : 0; }"
+                        onchange="window.opacity.settings.chat.visible = this.checked; if (window.opacity.chatWindow) { window.opacity.chatWindow.style.opacity = window.opacity.settings.chat.visible ? 1 : 0; } window.opacity.saveSettings();"
                     />
                 </td>
             </tr>
@@ -156,7 +217,7 @@ opacity.setWindowContent = function () {
                         min="0"
                         max="100"
                         value="${chatAlphaValue}"
-                        oninput="window.opacity.settings.chat.alpha = this.value/100; if (window.opacity.chatWindow) { window.opacity.chatWindow.style.opacity = window.opacity.settings.chat.alpha; }"
+                        oninput="window.opacity.settings.chat.alpha = this.value/100; if (window.opacity.chatWindow) { window.opacity.chatWindow.style.opacity = window.opacity.settings.chat.alpha; } window.opacity.saveSettings();"
                     />
                 </td>
             </tr>
@@ -199,6 +260,13 @@ opacity.injector = function (src) {
 
                 // everything else
                 this.discGraphics[${discID}].nameText.alpha = window.opacity.settings.players.usernames.visible ? window.opacity.settings.players.usernames.alpha : 0;
+                
+                // Team outline
+                if (this.discGraphics[${discID}].teamOutline != null) {
+                    this.discGraphics[${discID}].teamOutline.visible = window.opacity.settings.players.teamOutline.visible;
+                    this.discGraphics[${discID}].teamOutline.alpha = window.opacity.settings.players.teamOutline.alpha;
+                }
+                
                 if(this.discGraphics[${discID}].playerID != this.localPlayerID){
                     this.discGraphics[${discID}].container.visible = window.opacity.settings.players.visible;
                     this.discGraphics[${discID}].container.alpha = window.opacity.settings.players.alpha;
@@ -230,6 +298,9 @@ opacity.initMod = function () {
         return;
     }
 
+    // Load settings from localStorage
+    this.loadSettings();
+    
     this.setWindowContent();
     this.createWindow();
 
