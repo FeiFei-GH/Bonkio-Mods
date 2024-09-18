@@ -263,53 +263,47 @@ const addKeyTable = () => {
     keyTable.appendChild(pSelectorHold);
 
     let keyTableSettings = document.createElement('div');
-    keyTableSettings.display = "flex";
+    keyTableSettings.style.margin = "10px";
 
     let inputTopRow = document.createElement('div');
-    inputTopRow.display = "flex";
+    inputTopRow.style.display = "flex";
 
     let heavyInput = document.createElement('input');
     heavyInput.setAttribute("type", "text");
     heavyInput.value = "Heavy";
-    heavyInput.minWidth = "30%";
-    heavyInput.flexGrow = "1";
+    heavyInput.style.minWidth = "0";
 
     let upInput = document.createElement('input');
     upInput.setAttribute("type", "text");
     upInput.value = "↑";
-    upInput.minWidth = "30%";
-    upInput.flexGrow = "1";
+    upInput.style.minWidth = "0";
 
     let specialInput = document.createElement('input');
     specialInput.setAttribute("type", "text");
     specialInput.value = "Special";
-    specialInput.minWidth = "30%";
-    specialInput.flexGrow = "1";
+    specialInput.style.minWidth = "0";
 
     let inputBottomRow = document.createElement('div');
-    inputBottomRow.display = "flex";
+    inputBottomRow.style.display = "flex";
 
     let leftInput = document.createElement('input');
     leftInput.setAttribute("type", "text");
     leftInput.value = "←";
-    leftInput.minWidth = "30%";
-    leftInput.flexGrow = "1";
+    leftInput.style.minWidth = "0";
 
     let downInput = document.createElement('input');
     downInput.setAttribute("type", "text");
     downInput.value = "↓";
-    downInput.minWidth = "30%";
-    downInput.flexGrow = "1";
+    downInput.style.minWidth = "0";
 
     let rightInput = document.createElement('input');
     rightInput.setAttribute("type", "text");
     rightInput.value = "→";
-    rightInput.minWidth = "30%";
-    rightInput.flexGrow = "1";
+    rightInput.style.minWidth = "0";
 
-    inputTopRow.appendChild(heavyInput);
-    inputTopRow.appendChild(upInput);
     inputTopRow.appendChild(specialInput);
+    inputTopRow.appendChild(upInput);
+    inputTopRow.appendChild(heavyInput);
 
     inputBottomRow.appendChild(leftInput);
     inputBottomRow.appendChild(downInput);
