@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         LBB_Main
 // @namespace    http://tampermonkey.net/
-// @version      1.0.0
+// @version      1.0.1
 // @description  Main
 // @author       FeiFei
 // @license      none
@@ -16,11 +16,11 @@ window.LBB_Main = {};
 
 // #region //!------------------Initialize Variables-----------------
 LBB_Main.msgs = {
-    welcomeMsg: "Welcome username!",
-    welcomeMsg2: "Welcome username! You will be joining shortly",
-    finishMsg: "username finished with: time",
-    pbMsg: "Nice! username just got new PB: time",
-    wrMsg: "Congratulations! username just got new WR: time",
+    welcomeMsg: "Welcome {username}!",
+    welcomeMsg2: "Welcome {username}! You will be joining shortly",
+    finishMsg: "{username} finished with: {time}",
+    pbMsg: "Nice! {username} just got a new PB: {time}",
+    wrMsg: "Congratulations! {username} just got a new WR: {time}",
     goMsg: "Go!",
 };
 
@@ -52,17 +52,21 @@ LBB_Main.msToTimeStr = (ms) => {
 };
 
 LBB_Main.isPlayerValid = (player) => {
-    if (player.level >= 20) {
-        return true;
-    }
-    
-    return false;
-}
+    return player.level >= 20;
+};
+
+LBB_Main.formatMessage = (message, data) => {
+    return message.replace(/{(\w+)}/g, (match, key) => data[key] || match);
+};
 // #endregion
 
 // #region //!------------------Main Functions-----------------
 LBB_Main.sendFinishedMsg = (playerName, timeStr) => {
-    bonkAPI.chat(LBB_Main.msgs.finishMsg.replaceAll("username", playerName).replaceAll("time", timeStr));
+    const message = LBB_Main.formatMessage(LBB_Main.msgs.finishMsg, {
+        username: playerName,
+        time: timeStr,
+    });
+    bonkAPI.chat(message);
 };
 // #endregion
 
@@ -70,10 +74,12 @@ LBB_Main.sendFinishedMsg = (playerName, timeStr) => {
 bonkAPI.addEventListener("userJoin", (e) => {
     let playerName = e.userData.userName;
 
-    if (true) {
-        bonkAPI.chat(LBB_Main.msgs.welcomeMsg.replaceAll("username", playerName));
-    }
-    
+    const message = LBB_Main.formatMessage(LBB_Main.msgs.welcomeMsg, {
+        username: playerName,
+    });
+
+    bonkAPI.chat(message);
+
     if (LBB_Main.isPlayerValid(e.userData)) {
         console.log("add player to database");
         // LBB_LDB.addPlayer(e.userData);
@@ -88,7 +94,7 @@ bonkAPI.addEventListener("gameStart", (e) => {
 
 bonkAPI.addEventListener("mapSwitch", (e) => {
     console.log("Map switched: ");
-    
+
     console.log(bonkAPI.decodeMap(e.mapData));
 });
 // #endregion
@@ -102,8 +108,15 @@ LBB_Main.gameStartListener = (playerData) => {
 };
 
 LBB_Main.playerFinishListener = (playerID, finalFrame, processFrame) => {
-    console.log("player: " + bonkAPI.getPlayerNameByID(playerID) + " finalFrame: " + finalFrame + " processFrame: " + processFrame);
-    
+    console.log(
+        "player: " +
+            bonkAPI.getPlayerNameByID(playerID) +
+            " finalFrame: " +
+            finalFrame +
+            " processFrame: " +
+            processFrame
+    );
+
     // Check if the spawn frame ID already printed to prevent output again
     if (LBB_Main.processedFinishEvents[playerID].previousProcessFrame != processFrame) {
         LBB_Main.processedFinishEvents[playerID].previousProcessFrame = processFrame;
