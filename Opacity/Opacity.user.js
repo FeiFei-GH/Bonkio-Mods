@@ -94,6 +94,11 @@ opacity.setWindowContent = function () {
 
     let playersButtonDiv = document.createElement("div");
     playersButtonDiv.classList.add("bonkhud-header-color");
+    playersButtonDiv.classList.add("bonkhud-title-color");
+    playersButtonDiv.style.borderBottomLeftRadius = "8px";
+    playersButtonDiv.style.borderBottomRightRadius = "8px";
+    playersButtonDiv.style.padding = "5px";
+
     let playersLabel = document.createElement("span");
     playersLabel.textContent = "Players";
 
@@ -149,6 +154,7 @@ opacity.setWindowContent = function () {
     //-------------------------------------------------
     
     let playersAlphaDiv = document.createElement("div");
+    playersAlphaDiv.style.marginTop = "5px";
     playersAlphaDiv.style.display = "flex";
     playersAlphaDiv.style.alignContent = "center";
 
@@ -176,8 +182,77 @@ opacity.setWindowContent = function () {
     playersDropDiv.appendChild(playersVisibleDiv);
     playersDropDiv.appendChild(playersAlphaDiv);
 
+    let usernamesButtonDiv = document.createElement("div");
+    usernamesButtonDiv.classList.add("bonkhud-header-color");
+    usernamesButtonDiv.classList.add("bonkhud-title-color");
+    usernamesButtonDiv.style.borderBottomLeftRadius = "8px";
+    usernamesButtonDiv.style.borderBottomRightRadius = "8px";
+    usernamesButtonDiv.style.padding = "5px";
+
+    let usernamesLabel = document.createElement("span");
+    usernamesLabel.textContent = "Usernames";
+
+    usernamesButtonDiv.appendChild(usernamesLabel);
+
+    let usernamesDropDiv = bonkHUD.generateSection();
+    usernamesDropDiv.style.paddingTop = "2px";
+
+    //----------------------------------------------
+
+    let usernamesVisDiv = document.createElement("div");
+    usernamesVisDiv.style.marginTop = "5px";
+
+    let usernamesVisLabel = document.createElement("label");
+    usernamesVisLabel.classList.add("bonkhud-text-color");
+    usernamesVisLabel.classList.add("bonkhud-settings-label");
+    usernamesVisLabel.style.marginRight = "5px";
+    usernamesVisLabel.textContent = "Visible";
+
+    let usernamesVisCheckbox = document.createElement("input");
+    usernamesVisCheckbox.type = "checkbox";
+    usernamesVisCheckbox.checked = usernamesVisibleChecked;
+    usernamesVisCheckbox.onchange = () => {
+        window.opacity.settings.players.usernames.visible = this.checked;
+        window.opacity.saveSettings();
+    };
+
+    usernamesVisDiv.appendChild(usernamesVisLabel);
+    usernamesVisDiv.appendChild(usernamesVisCheckbox);
+
+    //-------------------------------------------------
+    
+    let usernamesAlphaDiv = document.createElement("div");
+    usernamesAlphaDiv.style.marginTop = "5px";
+    usernamesAlphaDiv.style.display = "flex";
+    usernamesAlphaDiv.style.alignContent = "center";
+
+    let usernamesAlphaLabel = document.createElement("label");
+    usernamesAlphaLabel.classList.add("bonkhud-settings-label");
+    usernamesAlphaLabel.textContent = "Opacity";
+
+    let usernamesAlphaSlider = document.createElement("input");
+    usernamesAlphaSlider.type = "range"; // Slider type for range selection
+    usernamesAlphaSlider.min = "0"; // Minimum opacity value
+    usernamesAlphaSlider.max = "100"; // Maximum opacity value (fully opaque)
+    usernamesAlphaSlider.value = usernamesAlphaValue; // Default value set to fully opaque
+    usernamesAlphaSlider.style.minWidth = "0";
+    usernamesAlphaSlider.style.flexGrow = "1";
+    usernamesAlphaSlider.style.marginLeft = "0.5rem";
+    usernamesAlphaSlider.oninput = () => {
+        window.opacity.settings.players.usernames.alpha = this.value/100;
+        window.opacity.saveSettings();
+    };
+
+    usernamesAlphaDiv.appendChild(usernamesAlphaLabel);
+    usernamesAlphaDiv.appendChild(usernamesAlphaSlider);
+
+    usernamesDropDiv.appendChild(usernamesVisDiv);
+    usernamesDropDiv.appendChild(usernamesAlphaDiv);
+
     windowHTML.appendChild(playersButtonDiv);
     windowHTML.appendChild(playersDropDiv);
+    windowHTML.appendChild(usernamesButtonDiv);
+    windowHTML.appendChild(usernamesDropDiv);
 
     // Create the HTML content using a template literal
     `
@@ -187,23 +262,6 @@ opacity.setWindowContent = function () {
                 <span class="bonkhud-title-color">Players</span>
             </caption>
             <tr>
-                <td colspan="2">
-                    <!-- Usernames Subsection -->
-                    <table class="bonkhud-background-color bonkhud-border-color" style="margin-top: 10px">
-                        <caption class="bonkhud-header-color">
-                            <span class="bonkhud-title-color">Usernames</span>
-                        </caption>
-                        <tr>
-                            <td class="bonkhud-text-color">Visible</td>
-                            <td>
-                                <input
-                                    type="checkbox"
-                                    ${usernamesVisibleChecked}
-                                    onchange="window.opacity.settings.players.usernames.visible = this.checked; window.opacity.saveSettings();"
-                                />
-                            </td>
-                        </tr>
-                        <tr>
                             <td class="bonkhud-text-color">Opacity</td>
                             <td>
                                 <input
