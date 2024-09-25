@@ -1,11 +1,12 @@
 // ==UserScript==
 // @name         SoundBoard
-// @version      1.2.0
+// @version      1.3.0
 // @description  Play sounds when specific chat messages are received
 // @author       FeiFei
 // @match        https://bonk.io/gameframe-release.html
 // @run-at       document-end
 // @grant        none
+// @namespace    https://greasyfork.org/users/1366475
 // ==/UserScript==
 
 "use strict";
@@ -14,7 +15,8 @@ let soundBoard = {};
 
 soundBoard.windowConfigs = {
     windowName: "SoundBoard",
-    modVersion: "1.2.0",
+    windowId: "soundBoard_window",
+    modVersion: "1.3.0",
     bonkLIBVersion: "1.1.3",
     bonkVersion: "49",
     windowContent: null,
@@ -38,18 +40,10 @@ soundBoard.sounds = [
     // *Add more sounds here if needed
 ];
 
-// Create the mod window using BonkHUD
-soundBoard.createWindow = function () {
-    // Create the window using BonkHUD
-    const modIndex = bonkHUD.createMod(this.windowConfigs.windowName, this.windowConfigs);
-    this.modIndex = modIndex; // Store the mod index just in case
-    
-    // Load UI settings if available
-    bonkHUD.loadUISetting(modIndex);
-};
-
 soundBoard.setWindowContent = function () {
     let windowHTML = document.createElement("div");
+    // !Maybe dont need this
+    windowHTML.id = soundBoard.windowConfigs.windowId; // Unique ID for scoping
 
     // Create the global mute toggle button
     let muteButton = document.createElement("button");
@@ -74,23 +68,40 @@ soundBoard.setWindowContent = function () {
         soundDiv.style.display = "flex";
         soundDiv.style.justifyContent = "space-between";
         soundDiv.style.alignItems = "center";
+        soundDiv.style.margin = "5px 0"; // Add some spacing between items
 
         let soundName = document.createElement("span");
         soundName.textContent = sound.name;
         soundName.title = sound.triggerMessage;
 
-        let toggleButton = document.createElement("button");
-        toggleButton.id = `toggleSound_${index}`;
-        toggleButton.textContent = sound.enabled ? "Enabled" : "Disabled";
-        toggleButton.addEventListener("click", () => {
-            sound.enabled = !sound.enabled;
-            toggleButton.textContent = sound.enabled ? "Enabled" : "Disabled";
+        // Create the checkbox input
+        let checkbox = document.createElement("input");
+        checkbox.type = "checkbox";
+        checkbox.id = `checkbox_${index}`;
+        checkbox.checked = sound.enabled;
+
+        // Create the label for the checkbox
+        let label = document.createElement("label");
+        label.htmlFor = `checkbox_${index}`;
+        label.className = `soundBoardButton`;
+
+        // Event listener to update the sound enabled state
+        checkbox.addEventListener("change", () => {
+            sound.enabled = checkbox.checked;
             // Save the settings
             this.saveSettings();
         });
 
+        // Create a container for the toggle switch
+        let toggleContainer = document.createElement("div");
+        toggleContainer.style.display = "flex";
+        toggleContainer.style.alignItems = "center";
+
+        toggleContainer.appendChild(checkbox);
+        toggleContainer.appendChild(label);
+
         soundDiv.appendChild(soundName);
-        soundDiv.appendChild(toggleButton);
+        soundDiv.appendChild(toggleContainer);
 
         soundList.appendChild(soundDiv);
     });
@@ -200,6 +211,57 @@ soundBoard.setSettingsContent = function () {
     this.settingsContentElement = settingsHTML;
 };
 
+// Create the mod window using BonkHUD
+soundBoard.createWindow = function () {
+    // Create the window using BonkHUD
+    const modIndex = bonkHUD.createMod(this.windowConfigs.windowName, this.windowConfigs);
+    this.modIndex = modIndex; // Store the mod index just in case
+    
+    // Load UI settings if available
+    bonkHUD.loadUISetting(modIndex);
+};
+
+// Function to add custom styles
+soundBoard.addStyles = function() {
+    const css = `
+    /* Scoped Styles for SoundBoard Mod */
+    #soundBoard_window .soundBoardButton {
+        background-color: #d2d2d2;
+        width: 50px;
+        height: 25px;
+        border-radius: 25px;
+        cursor: pointer;
+        position: relative;
+        transition: 0.2s;
+        display: inline-block;
+        vertical-align: middle;
+        margin-left: 10px;
+    }
+    #soundBoard_window .soundBoardButton::before {
+        position: absolute;
+        content: '';
+        background-color: #fff;
+        width: 22px;
+        height: 22px;
+        border-radius: 22px;
+        margin: 1.5px;
+        transition: 0.2s;
+    }
+    #soundBoard_window input[type="checkbox"]:checked + .soundBoardButton {
+        background-color: #20096d;
+    }
+    #soundBoard_window input[type="checkbox"]:checked + .soundBoardButton::before {
+        transform: translateX(25px);
+    }
+    #soundBoard_window input[type="checkbox"] {
+        display: none;
+    }
+    `;
+    let style = document.createElement('style');
+    style.innerHTML = css;
+    document.head.appendChild(style);
+};
+
 soundBoard.updateWindowContent = function () {
     let soundList = this.windowContentElement.querySelector('#soundList');
     if (soundList) {
@@ -212,23 +274,40 @@ soundBoard.updateWindowContent = function () {
             soundDiv.style.display = "flex";
             soundDiv.style.justifyContent = "space-between";
             soundDiv.style.alignItems = "center";
+            soundDiv.style.margin = "5px 0"; // Add some spacing between items
 
             let soundName = document.createElement("span");
             soundName.textContent = sound.name;
             soundName.title = sound.triggerMessage;
 
-            let toggleButton = document.createElement("button");
-            toggleButton.id = `toggleSound_${index}`;
-            toggleButton.textContent = sound.enabled ? "Enabled" : "Disabled";
-            toggleButton.addEventListener("click", () => {
-                sound.enabled = !sound.enabled;
-                toggleButton.textContent = sound.enabled ? "Enabled" : "Disabled";
+            // Create the checkbox input
+            let checkbox = document.createElement("input");
+            checkbox.type = "checkbox";
+            checkbox.id = `checkbox_${index}`;
+            checkbox.checked = sound.enabled;
+
+            // Create the label for the checkbox
+            let label = document.createElement("label");
+            label.htmlFor = `checkbox_${index}`;
+            label.className = `soundBoardButton`;
+
+            // Event listener to update the sound enabled state
+            checkbox.addEventListener("change", () => {
+                sound.enabled = checkbox.checked;
                 // Save the settings
                 this.saveSettings();
             });
 
+            // Create a container for the toggle switch
+            let toggleContainer = document.createElement("div");
+            toggleContainer.style.display = "flex";
+            toggleContainer.style.alignItems = "center";
+
+            toggleContainer.appendChild(checkbox);
+            toggleContainer.appendChild(label);
+
             soundDiv.appendChild(soundName);
-            soundDiv.appendChild(toggleButton);
+            soundDiv.appendChild(toggleContainer);
 
             soundList.appendChild(soundDiv);
         });
@@ -304,6 +383,7 @@ soundBoard.initMod = function () {
     this.setWindowContent();
     this.setSettingsContent();
     this.createWindow();
+    this.addStyles();
 
     // Add event listener for chat messages
     bonkAPI.addEventListener("chatIn", (e) => {
