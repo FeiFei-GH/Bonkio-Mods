@@ -12,7 +12,7 @@ CREATE TABLE Players (
 
 CREATE TABLE Maps (
     map_id              INTEGER PRIMARY KEY AUTOINCREMENT,
-    mapDBID             TEXT UNIQUE NOT NULL,
+    mapDBID             INTEGER UNIQUE NOT NULL,
     mapName             TEXT NOT NULL,
     mapAuthor           INTEGER NOT NULL,
     mapData             BLOB NOT NULL,
