@@ -121,7 +121,7 @@ opacity.setWindowContent = function () {
     let playersSkinsCheckbox = document.createElement("input");
     playersSkinsCheckbox.type = "checkbox";
     playersSkinsCheckbox.checked = playersSkinsChecked;
-    playersSkinsCheckbox.onchange = () => {
+    playersSkinsCheckbox.onchange = (e) => {
         window.opacity.settings.players.skins = this.checked;
         window.opacity.saveSettings();
     };
@@ -143,8 +143,8 @@ opacity.setWindowContent = function () {
     let playersVisibleCheckbox = document.createElement("input");
     playersVisibleCheckbox.type = "checkbox";
     playersVisibleCheckbox.checked = playersVisibleChecked;
-    playersVisibleCheckbox.onchange = () => {
-        window.opacity.settings.players.visible = this.checked;
+    playersVisibleCheckbox.onchange = (e) => {
+        window.opacity.settings.players.visible = e.target.checked;
         window.opacity.saveSettings();
     };
 
@@ -170,8 +170,8 @@ opacity.setWindowContent = function () {
     playersAlphaSlider.style.minWidth = "0";
     playersAlphaSlider.style.flexGrow = "1";
     playersAlphaSlider.style.marginLeft = "0.5rem";
-    playersAlphaSlider.oninput = () => {
-        window.opacity.settings.players.alpha = this.value/100;
+    playersAlphaSlider.oninput = (e) => {
+        window.opacity.settings.players.alpha = e.target.value/100;
         window.opacity.saveSettings();
     };
 
@@ -211,8 +211,8 @@ opacity.setWindowContent = function () {
     let usernamesVisCheckbox = document.createElement("input");
     usernamesVisCheckbox.type = "checkbox";
     usernamesVisCheckbox.checked = usernamesVisibleChecked;
-    usernamesVisCheckbox.onchange = () => {
-        window.opacity.settings.players.usernames.visible = this.checked;
+    usernamesVisCheckbox.onchange = (e) => {
+        window.opacity.settings.players.usernames.visible = e.target.checked;
         window.opacity.saveSettings();
     };
 
@@ -238,8 +238,8 @@ opacity.setWindowContent = function () {
     usernamesAlphaSlider.style.minWidth = "0";
     usernamesAlphaSlider.style.flexGrow = "1";
     usernamesAlphaSlider.style.marginLeft = "0.5rem";
-    usernamesAlphaSlider.oninput = () => {
-        window.opacity.settings.players.usernames.alpha = this.value/100;
+    usernamesAlphaSlider.oninput = (e) => {
+        window.opacity.settings.players.usernames.alpha = e.target.value/100;
         window.opacity.saveSettings();
     };
 
@@ -249,101 +249,158 @@ opacity.setWindowContent = function () {
     usernamesDropDiv.appendChild(usernamesVisDiv);
     usernamesDropDiv.appendChild(usernamesAlphaDiv);
 
+    //:::::::::::::::::::::::::::::::::::::::::::::::::
+
+    let teamButtonDiv = document.createElement("div");
+    teamButtonDiv.classList.add("bonkhud-header-color");
+    teamButtonDiv.classList.add("bonkhud-title-color");
+    teamButtonDiv.style.borderBottomLeftRadius = "8px";
+    teamButtonDiv.style.borderBottomRightRadius = "8px";
+    teamButtonDiv.style.padding = "5px";
+
+    let teamLabel = document.createElement("span");
+    teamLabel.textContent = "Team Outline";
+
+    teamButtonDiv.appendChild(teamLabel);
+
+    let teamDropDiv = bonkHUD.generateSection();
+    teamDropDiv.style.paddingTop = "2px";
+
+    //----------------------------------------------
+
+    let teamVisDiv = document.createElement("div");
+    teamVisDiv.style.marginTop = "5px";
+
+    let teamVisLabel = document.createElement("label");
+    teamVisLabel.classList.add("bonkhud-text-color");
+    teamVisLabel.classList.add("bonkhud-settings-label");
+    teamVisLabel.style.marginRight = "5px";
+    teamVisLabel.textContent = "Visible";
+
+    let teamVisCheckbox = document.createElement("input");
+    teamVisCheckbox.type = "checkbox";
+    teamVisCheckbox.checked = teamOutlineVisibleChecked;
+    teamVisCheckbox.onchange = (e) => {
+        window.opacity.settings.players.teamOutline.visible = e.target.checked;
+        window.opacity.saveSettings();
+    };
+
+    teamVisDiv.appendChild(teamVisLabel);
+    teamVisDiv.appendChild(teamVisCheckbox);
+
+    //-------------------------------------------------
+    
+    let teamAlphaDiv = document.createElement("div");
+    teamAlphaDiv.style.marginTop = "5px";
+    teamAlphaDiv.style.display = "flex";
+    teamAlphaDiv.style.alignContent = "center";
+
+    let teamAlphaLabel = document.createElement("label");
+    teamAlphaLabel.classList.add("bonkhud-settings-label");
+    teamAlphaLabel.textContent = "Opacity";
+
+    let teamAlphaSlider = document.createElement("input");
+    teamAlphaSlider.type = "range"; // Slider type for range selection
+    teamAlphaSlider.min = "0"; // Minimum opacity value
+    teamAlphaSlider.max = "100"; // Maximum opacity value (fully opaque)
+    teamAlphaSlider.value = teamOutlineAlphaValue; // Default value set to fully opaque
+    teamAlphaSlider.style.minWidth = "0";
+    teamAlphaSlider.style.flexGrow = "1";
+    teamAlphaSlider.style.marginLeft = "0.5rem";
+    teamAlphaSlider.oninput = (e) => {
+        window.opacity.settings.players.teamOutline.alpha = e.target.value/100;
+        window.opacity.saveSettings();
+    };
+
+    teamAlphaDiv.appendChild(teamAlphaLabel);
+    teamAlphaDiv.appendChild(teamAlphaSlider);
+
+    teamDropDiv.appendChild(teamVisDiv);
+    teamDropDiv.appendChild(teamAlphaDiv);
+
+    //:::::::::::::::::::::::::::::::::::::::::::::::::
+
+    let chatButtonDiv = document.createElement("div");
+    chatButtonDiv.classList.add("bonkhud-header-color");
+    chatButtonDiv.classList.add("bonkhud-title-color");
+    chatButtonDiv.style.borderBottomLeftRadius = "8px";
+    chatButtonDiv.style.borderBottomRightRadius = "8px";
+    chatButtonDiv.style.padding = "5px";
+
+    let chatLabel = document.createElement("span");
+    chatLabel.textContent = "Chat";
+
+    chatButtonDiv.appendChild(chatLabel);
+
+    let chatDropDiv = bonkHUD.generateSection();
+    chatDropDiv.style.paddingTop = "2px";
+
+    //----------------------------------------------
+
+    let chatVisDiv = document.createElement("div");
+    chatVisDiv.style.marginTop = "5px";
+
+    let chatVisLabel = document.createElement("label");
+    chatVisLabel.classList.add("bonkhud-text-color");
+    chatVisLabel.classList.add("bonkhud-settings-label");
+    chatVisLabel.style.marginRight = "5px";
+    chatVisLabel.textContent = "Visible";
+
+    let chatVisCheckbox = document.createElement("input");
+    chatVisCheckbox.type = "checkbox";
+    chatVisCheckbox.checked = chatVisibleChecked;
+    chatVisCheckbox.onchange = (e) => {
+        window.opacity.settings.chat.visible = e.target.checked;
+        if (window.opacity.chatWindow) { 
+            window.opacity.chatWindow.style.opacity = window.opacity.settings.chat.visible ? 1 : 0;
+        } 
+        window.opacity.saveSettings();
+    };
+
+    chatVisDiv.appendChild(chatVisLabel);
+    chatVisDiv.appendChild(chatVisCheckbox);
+
+    //-------------------------------------------------
+    
+    let chatAlphaDiv = document.createElement("div");
+    chatAlphaDiv.style.marginTop = "5px";
+    chatAlphaDiv.style.display = "flex";
+    chatAlphaDiv.style.alignContent = "center";
+
+    let chatAlphaLabel = document.createElement("label");
+    chatAlphaLabel.classList.add("bonkhud-settings-label");
+    chatAlphaLabel.textContent = "Opacity";
+
+    let chatAlphaSlider = document.createElement("input");
+    chatAlphaSlider.type = "range"; // Slider type for range selection
+    chatAlphaSlider.min = "0"; // Minimum opacity value
+    chatAlphaSlider.max = "100"; // Maximum opacity value (fully opaque)
+    chatAlphaSlider.value = chatAlphaValue; // Default value set to fully opaque
+    chatAlphaSlider.style.minWidth = "0";
+    chatAlphaSlider.style.flexGrow = "1";
+    chatAlphaSlider.style.marginLeft = "0.5rem";
+    chatAlphaSlider.oninput = (e) => {
+        window.opacity.settings.chat.alpha = e.target.value/100;
+        if (window.opacity.chatWindow) {
+            window.opacity.chatWindow.style.opacity = window.opacity.settings.chat.alpha;
+        }
+        window.opacity.saveSettings();
+    };
+
+    chatAlphaDiv.appendChild(chatAlphaLabel);
+    chatAlphaDiv.appendChild(chatAlphaSlider);
+
+    chatDropDiv.appendChild(chatVisDiv);
+    chatDropDiv.appendChild(chatAlphaDiv);
+
     windowHTML.appendChild(playersButtonDiv);
     windowHTML.appendChild(playersDropDiv);
     windowHTML.appendChild(usernamesButtonDiv);
     windowHTML.appendChild(usernamesDropDiv);
-
-    // Create the HTML content using a template literal
-    `
-    <div>
-        <table class="bonkhud-background-color bonkhud-border-color">
-            <caption class="bonkhud-header-color">
-                <span class="bonkhud-title-color">Players</span>
-            </caption>
-            <tr>
-                            <td class="bonkhud-text-color">Opacity</td>
-                            <td>
-                                <input
-                                    type="range"
-                                    style="width: 5vw"
-                                    min="0"
-                                    max="100"
-                                    value="${usernamesAlphaValue}"
-                                    oninput="window.opacity.settings.players.usernames.alpha = this.value/100; window.opacity.saveSettings();"
-                                />
-                            </td>
-                        </tr>
-                    </table>
-                    <!-- End of Usernames Subsection -->
-                </td>
-            </tr>
-            <tr>
-                <td colspan="2">
-                    <!-- Team Outline Subsection -->
-                    <table class="bonkhud-background-color bonkhud-border-color" style="margin-top: 10px">
-                        <caption class="bonkhud-header-color">
-                            <span class="bonkhud-title-color">Team Outline</span>
-                        </caption>
-                        <tr>
-                            <td class="bonkhud-text-color">Visible</td>
-                            <td>
-                                <input
-                                    type="checkbox"
-                                    ${teamOutlineVisibleChecked}
-                                    onchange="window.opacity.settings.players.teamOutline.visible = this.checked; window.opacity.saveSettings();"
-                                />
-                            </td>
-                        </tr>
-                        <tr>
-                            <td class="bonkhud-text-color">Opacity</td>
-                            <td>
-                                <input
-                                    type="range"
-                                    style="width: 5vw"
-                                    min="0"
-                                    max="100"
-                                    value="${teamOutlineAlphaValue}"
-                                    oninput="window.opacity.settings.players.teamOutline.alpha = this.value/100; window.opacity.saveSettings();"
-                                />
-                            </td>
-                        </tr>
-                    </table>
-                    <!-- End of Team Outline Subsection -->
-                </td>
-            </tr>
-        </table>
-        <!-- Chat Section -->
-        <table class="bonkhud-background-color bonkhud-border-color" style="margin-top: 20px">
-            <caption class="bonkhud-header-color">
-                <span class="bonkhud-title-color">Chat</span>
-            </caption>
-            <tr>
-                <td class="bonkhud-text-color">Visible</td>
-                <td>
-                    <input
-                        type="checkbox"
-                        ${chatVisibleChecked}
-                        onchange="window.opacity.settings.chat.visible = this.checked; if (window.opacity.chatWindow) { window.opacity.chatWindow.style.opacity = window.opacity.settings.chat.visible ? 1 : 0; } window.opacity.saveSettings();"
-                    />
-                </td>
-            </tr>
-            <tr>
-                <td class="bonkhud-text-color">Opacity</td>
-                <td>
-                    <input
-                        type="range"
-                        style="width: 5vw"
-                        min="0"
-                        max="100"
-                        value="${chatAlphaValue}"
-                        oninput="window.opacity.settings.chat.alpha = this.value/100; if (window.opacity.chatWindow) { window.opacity.chatWindow.style.opacity = window.opacity.settings.chat.alpha; } window.opacity.saveSettings();"
-                    />
-                </td>
-            </tr>
-        </table>
-    </div>
-    `
+    windowHTML.appendChild(teamButtonDiv);
+    windowHTML.appendChild(teamDropDiv);
+    windowHTML.appendChild(chatButtonDiv);
+    windowHTML.appendChild(chatDropDiv);
 
     // Set the windowContent to the container
     this.windowConfigs.windowContent = windowHTML;
