@@ -269,14 +269,20 @@ lbUtil.initMod = function () {
     this.addStyles();
     
     bonkAPI.addEventListener("gameStart", (e) => {
-        let players = e.mapData.discs;
-        lbUtil.inGamePlayers = {};
-        
-        for (let i = 0; i < players.length; i++) {
-            if (players[i] != null) {
-                // id : team
-                lbUtil.inGamePlayers[i] = players[i].team;
+        try {
+            let players = e.mapData.discs;
+            lbUtil.inGamePlayers = {};
+            
+            if (players != null) {
+                for (let i = 0; i < players.length; i++) {
+                    if (players[i] != null) {
+                        // id : team
+                        lbUtil.inGamePlayers[i] = players[i].team;
+                    }
+                }
             }
+        } catch (error) {
+            console.error(error);
         }
     });
     
