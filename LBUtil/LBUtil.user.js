@@ -244,7 +244,7 @@ lbUtil.injector = function (src) {
             console.error(err);
         }
         
-        return outputState;`;
+        return z0M[720];`;
 
     newSrc = newSrc.replace(orgCode, newCode);
     
