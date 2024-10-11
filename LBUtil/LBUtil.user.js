@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         LBUtil
-// @version      1.0.0
+// @version      1.1.0
 // @description  Made for LB
 // @author       FeiFei
 // @match        https://bonk.io/gameframe-release.html
@@ -15,7 +15,7 @@ window.lbUtil = {};
 lbUtil.windowConfigs = {
     windowName: "LBUtil",
     windowId: "lbUtil_window",
-    modVersion: "1.0.0",
+    modVersion: "1.1.0",
     bonkLIBVersion: "1.1.3",
     bonkVersion: "49",
     windowContent: null,
@@ -24,10 +24,12 @@ lbUtil.windowConfigs = {
 // Initialize default settings
 lbUtil.defaultSettings = {
     smartCapZone: true,
+    keepOutline: false,
 };
 
 // Dynamic Vars
 lbUtil.inGamePlayers = {};
+lbUtil.bonkRenderer = null;
 
 // Initialize settings
 lbUtil.settings = JSON.parse(JSON.stringify(lbUtil.defaultSettings));
@@ -68,6 +70,21 @@ lbUtil.capWontEnd = function () {
     
     return true;
 };
+
+lbUtil.resetCapzoneOutlines = function () {
+    for(let body of lbUtil.bonkRenderer.roundGraphics.bodyGraphics) {
+        if(!body) continue;
+        for(let shape of body.shapes) {
+            if(!shape || !shape.capZone) continue;
+            if(shape.graphicTexture) {
+                shape.graphicTexture.tint = 0xffffff;
+            }
+            else if(shape.graphic) {
+                shape.graphic.tint = 0xffffff;
+            }
+        }
+    }
+}
 
 // Create the mod window using BonkHUD
 lbUtil.createWindow = function () {
@@ -237,6 +254,11 @@ lbUtil.injector = function (src) {
                             capZone.o = -1;
                             capZone.ot = -1;
                         });
+                        
+                        // Reset capzone outlines
+                        if (!window.lbUtil.settings.keepOutline) {
+                            window.lbUtil.resetCapzoneOutlines();
+                        }
                     }
                 });
             }
@@ -245,6 +267,15 @@ lbUtil.injector = function (src) {
         }
         
         return z0M[720];`;
+
+    newSrc = newSrc.replace(orgCode, newCode);
+    
+    //! Inject Renderer reference
+    orgCode = `if(S6e.dontInterpolate == true){`;
+    newCode = `
+        window.lbUtil.bonkRenderer = this;
+        
+        if(S6e.dontInterpolate == true){`;
 
     newSrc = newSrc.replace(orgCode, newCode);
     
