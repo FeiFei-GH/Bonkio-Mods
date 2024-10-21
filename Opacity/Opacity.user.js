@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         Opacity
-// @version      2.2.0
+// @version      2.3.0
 // @description  A mod to toggle visibility settings in Bonk.io using BonkHUD
 // @author       FeiFei + Blu
 // @match        https://bonk.io/gameframe-release.html
@@ -15,7 +15,7 @@ window.opacity = {};
 opacity.windowConfigs = {
     windowName: "Opacity",
     windowId: "opacity_window",
-    modVersion: "2.2.0",
+    modVersion: "2.3.0",
     bonkLIBVersion: "1.1.3",
     bonkVersion: "49",
     windowContent: null,
@@ -122,7 +122,7 @@ opacity.setWindowContent = function () {
     playersSkinsCheckbox.type = "checkbox";
     playersSkinsCheckbox.checked = playersSkinsChecked;
     playersSkinsCheckbox.onchange = (e) => {
-        window.opacity.settings.players.skins = this.checked;
+        window.opacity.settings.players.skins = e.target.checked;
         window.opacity.saveSettings();
     };
 
