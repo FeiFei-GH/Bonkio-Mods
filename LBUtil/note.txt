@@ -1,0 +1,87 @@
+Useful Data:
+    Game start Packet contains:
+        Map Data
+        
+    Replay Submit contains:
+        GameSettings:
+            bal: [], // the nerf/buff of the players
+            ga: "b", // Engine
+            gt: 2, // game type
+            map: {...}, // map
+            mo: "sp", // the gamemode, see Game mode IDs
+            q: "bonkquick", // the quickplay mode, false when not quickpl ay (boolean not string), bonkquick, grapplequick, arrowsquick, training1 (simple? inaccessible)
+            tea: false, // teams enabled
+            tl: false, // teams locked
+            wl: 3 // rounds to win
+        inputs
+        ma: // map author
+        mid: // map id
+        mn: // map name
+        playerArray // players
+
+Salama's suggestion:
+    check initial state and map data
+    On game start you need to check a player's:
+        position
+        spawn position (for respawns)
+        start velocity
+        spawn start velocity (maybe)
+        angle = 0
+        angular velocity = 0
+        a1a (exact value, depends on mode)
+        Whether they're already grappling an object
+        Uhh arrow angle?
+
+Brain storm:
+    Player Name (maybe Player DBID)
+
+    Time Stamp - date and time
+
+    Mod version & game version
+
+    Input Data
+        Encryption and Hashing
+
+    Digital signature (maybe)
+
+    Maybe account binding (login via bonk)
+
+    Maybe server generate unique token...
+
+    Maybe invisible watermark
+
+    Submit replay via discord (bind discord account with player)
+
+
+Replay File Structure:
+    File Name: "Description" + MapName + Timestamp
+
+    Header Section (Unencrypted):
+        Player Name
+        Player Skin
+        
+        Map Name
+        Map Data (compressed)
+        
+        Finish Time
+        Player Positions per frame(30 FPS) (compressed)
+        
+        Timestamp
+        Mod Version
+        Game Version
+        Digital Signature (Unlikely)
+
+    Data Section (Encrypted):
+        Input Data (compressed)
+
+    Footer Section:
+        Hash of Header Section
+        Hash of Data Section
+
+WorkFlow:
+    Encrypt Data with asymetric key (code contains public key)
+    Scure hash prevent collisions
+    
+    Valid initial state when game starts
+    Valid player is login and above level 20
+    Valid player balance
