@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         LBUtil
-// @version      1.1.0
+// @version      1.2.0
 // @description  Made for LB
 // @author       FeiFei
 // @match        https://bonk.io/gameframe-release.html
@@ -15,7 +15,7 @@ window.lbUtil = {};
 lbUtil.windowConfigs = {
     windowName: "LBUtil",
     windowId: "lbUtil_window",
-    modVersion: "1.1.0",
+    modVersion: "1.2.0",
     bonkLIBVersion: "1.1.3",
     bonkVersion: "49",
     windowContent: null,
@@ -25,6 +25,7 @@ lbUtil.windowConfigs = {
 lbUtil.defaultSettings = {
     smartCapZone: true,
     keepOutline: false,
+    resetVTOLAngleOnDeath: false,
 };
 
 // Dynamic Vars
@@ -99,45 +100,52 @@ lbUtil.setWindowContent = function () {
     let windowHTML = document.createElement("div");
     windowHTML.id = lbUtil.windowConfigs.windowId; // Unique ID for scoping
     windowHTML.classList.add("bonkhud-background-color");
+    
+    // Helper function to create a setting toggle
+    function createSettingToggle(settingKey, settingLabel) {
+        let settingDiv = document.createElement("div");
+        settingDiv.className = "setting-item bonkhud-border-color"; // Apply border color
 
-    // Create the toggle for smartCapZone
-    let settingDiv = document.createElement("div");
-    settingDiv.className = "setting-item bonkhud-border-color"; // Apply border color
+        let settingName = document.createElement("span");
+        settingName.className = "setting-name bonkhud-text-color"; // Apply text color
+        settingName.textContent = settingLabel;
 
-    let settingName = document.createElement("span");
-    settingName.className = "setting-name bonkhud-text-color"; // Apply text color
-    settingName.textContent = "Smart Cap Zone";
+        // Create the checkbox input
+        let checkbox = document.createElement("input");
+        checkbox.type = "checkbox";
+        checkbox.id = `${settingKey}Checkbox`;
+        checkbox.checked = this.settings[settingKey];
 
-    // Create the checkbox input
-    let checkbox = document.createElement("input");
-    checkbox.type = "checkbox";
-    checkbox.id = "smartCapZoneCheckbox";
-    checkbox.checked = this.settings.smartCapZone;
+        // Create the label for the checkbox (toggle switch)
+        let label = document.createElement("label");
+        label.htmlFor = `${settingKey}Checkbox`;
+        label.className = "lbUtilToggle bonkhud-button-color"; // Apply button color
 
-    // Create the label for the checkbox (toggle switch)
-    let label = document.createElement("label");
-    label.htmlFor = "smartCapZoneCheckbox";
-    label.className = "lbUtilToggle bonkhud-button-color"; // Apply button color
+        // Event listener to update the setting
+        checkbox.addEventListener("change", () => {
+            this.settings[settingKey] = checkbox.checked;
+            // Save settings
+            this.saveSettings();
+        });
 
-    // Event listener to update the setting
-    checkbox.addEventListener("change", () => {
-        this.settings.smartCapZone = checkbox.checked;
-        // Save settings
-        this.saveSettings();
-    });
+        // Create a container for the toggle switch
+        let toggleContainer = document.createElement("div");
+        toggleContainer.style.display = "flex";
+        toggleContainer.style.alignItems = "center";
 
-    // Create a container for the toggle switch
-    let toggleContainer = document.createElement("div");
-    toggleContainer.style.display = "flex";
-    toggleContainer.style.alignItems = "center";
+        toggleContainer.appendChild(checkbox);
+        toggleContainer.appendChild(label);
 
-    toggleContainer.appendChild(checkbox);
-    toggleContainer.appendChild(label);
+        settingDiv.appendChild(settingName);
+        settingDiv.appendChild(toggleContainer);
 
-    settingDiv.appendChild(settingName);
-    settingDiv.appendChild(toggleContainer);
-
-    windowHTML.appendChild(settingDiv);
+        windowHTML.appendChild(settingDiv);
+    }
+    
+    // Create the toggles for all settings
+    createSettingToggle.call(this, "smartCapZone", "Smart Cap Zone");
+    createSettingToggle.call(this, "keepOutline", "Keep Cap Zone Outline");
+    createSettingToggle.call(this, "resetVTOLAngleOnDeath", "Reset VTOL Angle On Death(Desync warning)");
 
     // Set the windowContent to the container
     this.windowConfigs.windowContent = windowHTML;
@@ -261,6 +269,17 @@ lbUtil.injector = function (src) {
                         }
                     }
                 });
+            }
+                
+            if (window.lbUtil.settings.resetVTOLAngleOnDeath) {
+                outputState.discDeaths.forEach((death) => {
+                    if (death.f == 0) { // Dead this frame
+                        // Reset VTOL angle
+                        outputState.discs[death.i].a = 0;
+                        outputState.discs[death.i].av = 0;
+                    }
+                });
+            
             }
         } catch(err) {
             console.error(err);

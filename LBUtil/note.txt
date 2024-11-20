@@ -54,25 +54,24 @@ Brain storm:
 
 
 Replay File Structure:
-    File Name: "Description" + MapName + Timestamp
+    File Name: "{MapName} {FinishTime} {PlayerName}"
 
     Header Section (Unencrypted):
         Player Name
-        Player Skin
-        
         Map Name
-        Map Data (compressed)
-        
         Finish Time
+        
+        Player Skin
+        Map Data (compressed)
         Player Positions per frame(30 FPS) (compressed)
         
         Timestamp
         Mod Version
         Game Version
-        Digital Signature (Unlikely)
 
     Data Section (Encrypted):
-        Input Data (compressed)
+        Initial State
+        Player Input Data (compressed)
 
     Footer Section:
         Hash of Header Section
