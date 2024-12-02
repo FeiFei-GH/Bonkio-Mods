@@ -67,6 +67,7 @@ snowToggle.createWindow = function () {
 // Set settings content with a toggle button
 snowToggle.setSettingsContent = function () {
     let settingsHTML = document.createElement("div");
+    settingsHTML.id = "snowToggleModContainer";
     settingsHTML.className = "settings-container bonkhud-background-color"; // Apply background color
 
     // Create the toggle switch container
@@ -113,7 +114,7 @@ snowToggle.setSettingsContent = function () {
 snowToggle.addStyles = function () {
     const css = `
     /* Scoped Styles for SnowToggle Mod */
-    #snowToggle_window .snowToggleSwitch {
+    #snowToggleModContainer .snowToggleSwitch {
         position: relative;
         width: 40px;
         height: 20px;
@@ -122,7 +123,7 @@ snowToggle.addStyles = function () {
         cursor: pointer;
         transition: background-color 0.2s;
     }
-    #snowToggle_window .snowToggleSwitch::before {
+    #snowToggleModContainer .snowToggleSwitch::before {
         content: '';
         position: absolute;
         width: 18px;
@@ -133,13 +134,13 @@ snowToggle.addStyles = function () {
         border-radius: 50%;
         transition: transform 0.2s;
     }
-    #snowToggle_window input[type="checkbox"]:checked + .snowToggleSwitch::before {
+    #snowToggleModContainer input[type="checkbox"]:checked + .snowToggleSwitch::before {
         transform: translateX(20px);
     }
-    #snowToggle_window input[type="checkbox"]:checked + .snowToggleSwitch {
+    #snowToggleModContainer input[type="checkbox"]:checked + .snowToggleSwitch {
         background-color: #2196F3;
     }
-    #snowToggle_window input[type="checkbox"] {
+    #snowToggleModContainer input[type="checkbox"] {
         display: none;
     }
     `;
