@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         LBUtil
-// @version      1.2.0
+// @version      1.2.1
 // @description  Made for LB
 // @author       FeiFei
 // @match        https://bonk.io/gameframe-release.html
@@ -15,7 +15,7 @@ window.lbUtil = {};
 lbUtil.windowConfigs = {
     windowName: "LBUtil",
     windowId: "lbUtil_window",
-    modVersion: "1.2.0",
+    modVersion: "1.2.1",
     bonkLIBVersion: "1.1.3",
     bonkVersion: "49",
     windowContent: null,
@@ -272,14 +272,19 @@ lbUtil.injector = function (src) {
             }
                 
             if (window.lbUtil.settings.resetVTOLAngleOnDeath) {
-                outputState.discDeaths.forEach((death) => {
-                    if (death.f == 0) { // Dead this frame
-                        // Reset VTOL angle
-                        outputState.discs[death.i].a = 0;
-                        outputState.discs[death.i].av = 0;
-                    }
-                });
-            
+                if (outputState.discDeaths) {
+                    outputState.discDeaths.forEach((death) => {
+                        if (death.f == 0) { // Dead this frame
+                            let disc = outputState.discs[death.i];
+                            
+                            if (disc) {
+                                // Reset VTOL angle
+                                disc.a = 0;
+                                disc.av = 0;
+                            }
+                        }
+                    });
+                }
             }
         } catch(err) {
             console.error(err);
