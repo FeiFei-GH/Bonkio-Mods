@@ -4,6 +4,8 @@
 // @description  A template for creating mods using BonkHUD
 // @author       Your Name
 // @match        https://bonk.io/gameframe-release.html
+// @match        https://bonkisback.io/gameframe-release.html
+// @match        https://multiplayer.gg/physics/gameframe-release.html
 // @run-at       document-end
 // @grant        none
 // ==/UserScript==
@@ -15,23 +17,25 @@ window.modName = {};
 
 // Initialize settings or variables your mod might need
 modName.windowConfigs = {
-    windowName: "Mod Name",
-    windowId: "modNameWindow",
+    windowName: "Mod Name", // The title of the window
+    windowId: "modName_window",
     modVersion: "1.0.0",
-    bonkLIBVersion: "1.1.0",
+    bonkLIBVersion: "1.1.3",
     bonkVersion: "49",
     windowContent: null,
     //settingsContent: null,
     //noWindow: false,
 };
 
+// !UI:
 // Create the mod window using BonkHUD
 modName.createWindow = function () {
     // Create the window using BonkHUD
-    const modIndex = bonkHUD.createMod(
-                            this.windowConfigs.windowName, 
-                            this.windowConfigs );
-
+    const modIndex = bonkHUD.createMod(this.windowConfigs.windowName, this.windowConfigs);
+    
+    // Load UI settings if available
+    bonkHUD.loadUISetting(modIndex);
+    
     //! Possible: Customize inner window style if needed
     // let modWindow = bonkHUD.getElementByIndex(modIndex);
     /* If you want to change padding
@@ -58,7 +62,7 @@ modName.setWindowContent = function () {
     // Add to windowContent
     this.windowConfigs.windowContent = windowHTML;
     // this.windowConfigs.settingsContent = ...;
-}
+};
 
 modName.setSettingFunctionality = function (modIndex) {
     // Access elements from settings with id and then add events/input
@@ -67,21 +71,12 @@ modName.setSettingFunctionality = function (modIndex) {
     // Use let mySettings = bonkHUD.getModSetting(modIndex) to retreive settings object
     // Use bonkHUD.resetModSetting(modIndex) to DELETE your current saved settings
     //! How the settings object is used depends on the mod maker
-}
+};
 
 // Initialize the mod (run when document is ready)
 modName.initMod = function () {
-    // Ensure BonkHUD is available
-    if (!window.bonkHUD) {
-        console.error("BonkHUD is not loaded. Please make sure BonkHUD is installed.");
-        return;
-    }
-
     this.setWindowContent();
     this.createWindow();
-
-    // Load UI settings if available
-    bonkHUD.loadUISetting(this.windowConfigs.windowId);
 
     //! Possible: Add event listeners if needed
     // bonkAPI.addEventListeners("event", (e) => {});
@@ -89,13 +84,38 @@ modName.initMod = function () {
     console.log(this.windowConfigs.windowName + " initialized");
 };
 
+// !Loaders:
+// Function to ensure bonkAPI is loaded or timeout after a set duration
+const ensureBonkAPI = async (timeout = 5000, retryInterval = 100) => {
+    const maxRetries = Math.ceil(timeout / retryInterval);
+    let retries = 0;
+
+    while (!window.bonkAPI && retries < maxRetries) {
+        console.warn(`bonkAPI not found. Retrying (${retries + 1}/${maxRetries})...`);
+        await new Promise((resolve) => setTimeout(resolve, retryInterval));
+        retries++;
+    }
+
+    if (!window.bonkAPI) {
+        alert("BonkAPI is not loaded or installed. Please ensure BonkAPI is installed and try again.");
+        console.error("Failed to load bonkAPI after multiple retries.");
+        return false;
+    }
+
+    return true;
+};
+
 // Function to handle document readiness and initialize the mod
-modName.onDocumentReady = function () {
+modName.onDocumentReady = async () => {
     if (document.readyState === "complete" || document.readyState === "interactive") {
-        this.initMod();
+        if (await ensureBonkAPI()) {
+            modName.initMod();
+        }
     } else {
-        document.addEventListener("DOMContentLoaded", () => {
-            this.initMod();
+        document.addEventListener("DOMContentLoaded", async () => {
+            if (await ensureBonkAPI()) {
+                modName.initMod();
+            }
         });
     }
 };
