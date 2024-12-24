@@ -425,8 +425,40 @@ const init = () => {
     }
 };
 
-if (document.readyState === "complete" || document.readyState === "interactive") {
-    init();
-} else {
-    document.addEventListener("DOMContentLoaded", init);
-}
+// !Loaders:
+// Function to ensure bonkAPI is loaded or timeout after a set duration
+const ensureBonkAPI = async (timeout = 5000, retryInterval = 100) => {
+    const maxRetries = Math.ceil(timeout / retryInterval);
+    let retries = 0;
+
+    while (!window.bonkAPI && retries < maxRetries) {
+        console.warn(`bonkAPI not found. Retrying (${retries + 1}/${maxRetries})...`);
+        await new Promise((resolve) => setTimeout(resolve, retryInterval));
+        retries++;
+    }
+
+    if (!window.bonkAPI) {
+        alert("BonkAPI is not loaded or installed. Please ensure BonkAPI is installed and try again.");
+        console.error("Failed to load bonkAPI after multiple retries.");
+        return false;
+    }
+
+    return true;
+};
+
+// Function to handle document readiness and initialize the mod
+pkrDiv.onDocumentReady = async () => {
+    if (document.readyState === "complete" || document.readyState === "interactive") {
+        if (await ensureBonkAPI()) {
+            init();
+        }
+    } else {
+        document.addEventListener("DOMContentLoaded", async () => {
+            if (await ensureBonkAPI()) {
+                init();
+            }
+        });
+    }
+};
+
+pkrDiv.onDocumentReady();
