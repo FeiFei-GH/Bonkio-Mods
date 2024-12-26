@@ -164,146 +164,148 @@ pkrUtils.generateMarker = (xInput, yInput, rInput) => {
     });
 }
 
-bonkAPI.addEventListener("graphicsReady", (e) => {
-    console.log("Readying Graphics");
-    pkrUtils.gCtx = new window.PIXI.Container();
-    pkrUtils.markers.forEach((val, key, map) => {
-        val.resize();
-    });
-    bonkAPI.pixiCtx.addChild(pkrUtils.gCtx);
-    pkrUtils.goResize = true;
-});
-
-bonkAPI.addEventListener("modeChange", (e) => {
-    currentMode = e.mode;
-    let arrowdivs = document.getElementsByClassName("pkrutils-arrows-div");
-    let vtoldivs = document.getElementsByClassName("pkrutils-vtol-div");
-    if(currentMode == "ar" || currentMode == "ard") {
-        for(let i = 0; i < arrowdivs.length; i++) {
-            arrowdivs[i].style.display = "block";
-        }
-        for(let i = 0; i < vtoldivs.length; i++) {
-            vtoldivs[i].style.display = "none";
-        }
-    }
-    else if(currentMode == "v") {
-        for(let i = 0; i < arrowdivs.length; i++) {
-            arrowdivs[i].style.display = "none";
-        }
-        for(let i = 0; i < vtoldivs.length; i++) {
-            vtoldivs[i].style.display = "block";
-        }
-    }
-    else {
-        for(let i = 0; i < arrowdivs.length; i++) {
-            arrowdivs[i].style.display = "none";
-        }
-        for(let i = 0; i < vtoldivs.length; i++) {
-            vtoldivs[i].style.display = "none";
-        }
-    }
-});
-
-bonkAPI.addEventListener("stepEvent", (e) => {
-    if(bonkAPI.isInGame()) {
-        let inputState = e.inputState;
-        try {
-            pkrUtils.currentData = inputState.discs[pkrUtils.currentPlayerID];
-
-            let specialCD = pkrUtils.currentData.a1a;
-            let xPos = pkrUtils.currentData.x * pkrUtils.scale - 365;
-            let yPos = pkrUtils.currentData.y * pkrUtils.scale - 250;
-            let xVel = pkrUtils.currentData.xv * pkrUtils.scale;
-            let yVel = pkrUtils.currentData.yv * pkrUtils.scale;
-            if(!pkrUtils.hasPrecision) {
-                xPos = xPos.toFixed(2);
-                yPos = yPos.toFixed(2);
-                xVel = xVel.toFixed(2);
-                yVel = yVel.toFixed(2);
-            }
-
-            pkrUtils.positionElement.textContent = "(" + xPos + ", " + yPos + ")";
-            pkrUtils.velocityElement.textContent = "(" + xVel + ", " + yVel + ")";
-            pkrUtils.specialElement.textContent = specialCD / 10;
-            pkrUtils.vtolAngle.textContent = pkrUtils.currentData.a;
-            pkrUtils.vtolAnglev.textContent = pkrUtils.currentData.av;
-            pkrUtils.arrowCharge.textContent = pkrUtils.currentData.ds;
-            pkrUtils.arrowAngle.textContent = pkrUtils.currentData.da;
-        } catch (err) {}
-    }
-});
-
-bonkAPI.addEventListener('gameStart', (e) => {
-    try {
-        pkrUtils.scale = e.mapData.physics.ppm;
-        pkrUtils.goResize = true;
-    } catch(er) {console.log(er)}
-});
-
-bonkAPI.addEventListener("graphicsUpdate", (e) => {
-    //console.log("g");
-    if(pkrUtils.screenWidth != e.width || pkrUtils.goResize) {
-        pkrUtils.screenWidth = e.width;
-        pkrUtils.gScale = e.width / 730;
+const addEvents = () => {
+    bonkAPI.addEventListener("graphicsReady", (e) => {
+        console.log("Readying Graphics");
+        pkrUtils.gCtx = new window.PIXI.Container();
         pkrUtils.markers.forEach((val, key, map) => {
             val.resize();
         });
-        pkrUtils.goResize = false;
-    }
-});
+        bonkAPI.pixiCtx.addChild(pkrUtils.gCtx);
+        pkrUtils.goResize = true;
+    });
 
-// Event listener for when a user joins the game
-bonkAPI.addEventListener("userJoin", (e) => {
-    //console.log("User join event received", e);
-    //console.log("User ID", e.userID);
-    // Add the player to the player selector
-    pkrUtils.create_option(e.userID);
-});
+    bonkAPI.addEventListener("modeChange", (e) => {
+        currentMode = e.mode;
+        let arrowdivs = document.getElementsByClassName("pkrutils-arrows-div");
+        let vtoldivs = document.getElementsByClassName("pkrutils-vtol-div");
+        if(currentMode == "ar" || currentMode == "ard") {
+            for(let i = 0; i < arrowdivs.length; i++) {
+                arrowdivs[i].style.display = "block";
+            }
+            for(let i = 0; i < vtoldivs.length; i++) {
+                vtoldivs[i].style.display = "none";
+            }
+        }
+        else if(currentMode == "v") {
+            for(let i = 0; i < arrowdivs.length; i++) {
+                arrowdivs[i].style.display = "none";
+            }
+            for(let i = 0; i < vtoldivs.length; i++) {
+                vtoldivs[i].style.display = "block";
+            }
+        }
+        else {
+            for(let i = 0; i < arrowdivs.length; i++) {
+                arrowdivs[i].style.display = "none";
+            }
+            for(let i = 0; i < vtoldivs.length; i++) {
+                vtoldivs[i].style.display = "none";
+            }
+        }
+    });
 
-// Event listener for when a user leaves the game
-bonkAPI.addEventListener("userLeave", (e) => {
-    //console.log("User Leave event received", e);
-    //console.log("User ID", e.userID);
-    // Remove the player from the player selector
-    let playerName = bonkAPI.getPlayerNameByID(e.userID);
-    let player_selector = document.getElementById("pkrutils_player_selector");
-    // If the player is the current player, set the current player to 0 and reset the selector
-    if (player_selector.options[player_selector.selectedIndex].value === playerName) {
+    bonkAPI.addEventListener("stepEvent", (e) => {
+        if(bonkAPI.isInGame()) {
+            let inputState = e.inputState;
+            try {
+                pkrUtils.currentData = inputState.discs[pkrUtils.currentPlayerID];
+
+                let specialCD = pkrUtils.currentData.a1a;
+                let xPos = pkrUtils.currentData.x * pkrUtils.scale - 365;
+                let yPos = pkrUtils.currentData.y * pkrUtils.scale - 250;
+                let xVel = pkrUtils.currentData.xv * pkrUtils.scale;
+                let yVel = pkrUtils.currentData.yv * pkrUtils.scale;
+                if(!pkrUtils.hasPrecision) {
+                    xPos = xPos.toFixed(2);
+                    yPos = yPos.toFixed(2);
+                    xVel = xVel.toFixed(2);
+                    yVel = yVel.toFixed(2);
+                }
+
+                pkrUtils.positionElement.textContent = "(" + xPos + ", " + yPos + ")";
+                pkrUtils.velocityElement.textContent = "(" + xVel + ", " + yVel + ")";
+                pkrUtils.specialElement.textContent = specialCD / 10;
+                pkrUtils.vtolAngle.textContent = pkrUtils.currentData.a;
+                pkrUtils.vtolAnglev.textContent = pkrUtils.currentData.av;
+                pkrUtils.arrowCharge.textContent = pkrUtils.currentData.ds;
+                pkrUtils.arrowAngle.textContent = pkrUtils.currentData.da;
+            } catch (err) {}
+        }
+    });
+
+    bonkAPI.addEventListener('gameStart', (e) => {
+        try {
+            pkrUtils.scale = e.mapData.physics.ppm;
+            pkrUtils.goResize = true;
+        } catch(er) {console.log(er)}
+    });
+
+    bonkAPI.addEventListener("graphicsUpdate", (e) => {
+        //console.log("g");
+        if(pkrUtils.screenWidth != e.width || pkrUtils.goResize) {
+            pkrUtils.screenWidth = e.width;
+            pkrUtils.gScale = e.width / 730;
+            pkrUtils.markers.forEach((val, key, map) => {
+                val.resize();
+            });
+            pkrUtils.goResize = false;
+        }
+    });
+
+    // Event listener for when a user joins the game
+    bonkAPI.addEventListener("userJoin", (e) => {
+        //console.log("User join event received", e);
+        //console.log("User ID", e.userID);
+        // Add the player to the player selector
+        pkrUtils.create_option(e.userID);
+    });
+
+    // Event listener for when a user leaves the game
+    bonkAPI.addEventListener("userLeave", (e) => {
+        //console.log("User Leave event received", e);
+        //console.log("User ID", e.userID);
+        // Remove the player from the player selector
+        let playerName = bonkAPI.getPlayerNameByID(e.userID);
+        let player_selector = document.getElementById("pkrutils_player_selector");
+        // If the player is the current player, set the current player to 0 and reset the selector
+        if (player_selector.options[player_selector.selectedIndex].value === playerName) {
+            pkrUtils.currentPlayerID = bonkAPI.getMyID();
+            // Set the selector to the first option as default
+            player_selector.selectedIndex = 0;
+        }
+
+        pkrUtils.remove_option(e.userID);
+    });
+
+    // Event listener for when user(mod user) creates a room
+    bonkAPI.addEventListener("createRoom", (e) => {
+        //console.log("create Room event received", e);
+        //console.log("User ID", e);
+        // Set the player name in the player selector to the current user
+        let option = document.getElementById("pkrutils_selector_option_user");
+        let playerName = bonkAPI.getPlayerNameByID(e.userID);
+        option.innerText = playerName;
+        option.value = e.userID;
+        pkrUtils.currentPlayerID = e.userID;
+        // Reset the player selector to the default state
+        pkrUtils.reset_selector();
+    });
+
+    // Event listener for when user(mod user) joins a room
+    bonkAPI.addEventListener("joinRoom", (e) => {
+        //console.log("on Join event received", e);
+        //console.log("User ID", e.userID);
+        // Set the player name in the player selector to the current user
+        let option = document.getElementById("pkrutils_selector_option_user");
+        let playerName = bonkAPI.getPlayerNameByID(bonkAPI.getMyID());
+        option.innerText = playerName;
+        option.value = bonkAPI.getMyID();
         pkrUtils.currentPlayerID = bonkAPI.getMyID();
-        // Set the selector to the first option as default
-        player_selector.selectedIndex = 0;
-    }
-
-    pkrUtils.remove_option(e.userID);
-});
-
-// Event listener for when user(mod user) creates a room
-bonkAPI.addEventListener("createRoom", (e) => {
-    //console.log("create Room event received", e);
-    //console.log("User ID", e);
-    // Set the player name in the player selector to the current user
-    let option = document.getElementById("pkrutils_selector_option_user");
-    let playerName = bonkAPI.getPlayerNameByID(e.userID);
-    option.innerText = playerName;
-    option.value = e.userID;
-    pkrUtils.currentPlayerID = e.userID;
-    // Reset the player selector to the default state
-    pkrUtils.reset_selector();
-});
-
-// Event listener for when user(mod user) joins a room
-bonkAPI.addEventListener("joinRoom", (e) => {
-    //console.log("on Join event received", e);
-    //console.log("User ID", e.userID);
-    // Set the player name in the player selector to the current user
-    let option = document.getElementById("pkrutils_selector_option_user");
-    let playerName = bonkAPI.getPlayerNameByID(bonkAPI.getMyID());
-    option.innerText = playerName;
-    option.value = bonkAPI.getMyID();
-    pkrUtils.currentPlayerID = bonkAPI.getMyID();
-    // Update the player list in the player selector
-    pkrUtils.update_players();
-});
+        // Update the player list in the player selector
+        pkrUtils.update_players();
+    });
+};
 
 // Main function to construct and add the key table UI to the DOM
 const addPkrDiv = () => {
@@ -416,6 +418,7 @@ const addPkrDiv = () => {
 
 // Initialization logic to set up the UI once the document is ready
 const init = () => {
+    addEvents();
     addPkrDiv();
     let playerSelector = document.getElementById("pkrutils_player_selector");
     if (playerSelector) {
