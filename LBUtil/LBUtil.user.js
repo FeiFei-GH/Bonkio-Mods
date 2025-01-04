@@ -15,7 +15,7 @@ window.lbUtil = {};
 lbUtil.windowConfigs = {
     windowName: "LBUtil",
     windowId: "lbUtil_window",
-    modVersion: "1.2.1",
+    modVersion: "1.2.2",
     bonkLIBVersion: "1.1.3",
     bonkVersion: "49",
     windowContent: null,

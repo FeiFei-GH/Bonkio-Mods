@@ -18,7 +18,7 @@ window.pkrUtils = {}; // Namespace for encapsulating the UI functions and variab
 pkrUtils.windowConfigs = {
     windowName: "pkrUtils",
     windowId: "pkr_utils_window",
-    modVersion: "1.2.1",
+    modVersion: "1.2.2",
     bonkLIBVersion: "1.1.3",
     bonkVersion: "49",
 };
@@ -450,7 +450,7 @@ const ensureBonkAPI = async (timeout = 5000, retryInterval = 100) => {
 };
 
 // Function to handle document readiness and initialize the mod
-pkrDiv.onDocumentReady = async () => {
+pkrUtils.onDocumentReady = async () => {
     if (document.readyState === "complete" || document.readyState === "interactive") {
         if (await ensureBonkAPI()) {
             init();
@@ -464,4 +464,4 @@ pkrDiv.onDocumentReady = async () => {
     }
 };
 
-pkrDiv.onDocumentReady();
+pkrUtils.onDocumentReady();

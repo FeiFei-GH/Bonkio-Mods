@@ -16,7 +16,7 @@ let soundBoard = {};
 soundBoard.windowConfigs = {
     windowName: "SoundBoard",
     windowId: "soundBoard_window",
-    modVersion: "1.4.0",
+    modVersion: "1.4.1",
     bonkLIBVersion: "1.1.3",
     bonkVersion: "49",
     windowContent: null,

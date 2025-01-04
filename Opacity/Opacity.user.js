@@ -15,7 +15,7 @@ window.opacity = {};
 opacity.windowConfigs = {
     windowName: "Opacity",
     windowId: "opacity_window",
-    modVersion: "2.3.0",
+    modVersion: "2.3.1",
     bonkLIBVersion: "1.1.3",
     bonkVersion: "49",
     windowContent: null,
