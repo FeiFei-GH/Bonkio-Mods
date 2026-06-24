@@ -19,7 +19,7 @@ window.KeyTable = {}; // Namespace for encapsulating the UI functions and variab
 KeyTable.windowConfigs = {
     windowName: "KeyTable",
     windowId: "keytable_window",
-    modVersion: "1.4.2",
+    modVersion: "1.4.3",
     bonkLIBVersion: "1.1.3",
     bonkVersion: "49",
 };
@@ -109,74 +109,76 @@ KeyTable.update_players = () => {
     });
 };
 
-// Process input data and invoke style updates
-bonkAPI.addEventListener("gameInputs", (e) => {
-    // console.log("gameInputs event received", e);
-    if (e.userID == KeyTable.currentPlayerID) {
-        // console.log("Updating latestInput for player", readingPlayerID, "with input", e.rawInput);
-        KeyTable.latestInput = e.rawInput;
-        KeyTable.updateKeyStyles();
-    }
-});
+const addEvents = () => {
+    // Process input data and invoke style updates
+    bonkAPI.addEventListener("gameInputs", (e) => {
+        // console.log("gameInputs event received", e);
+        if (e.userID == KeyTable.currentPlayerID) {
+            // console.log("Updating latestInput for player", readingPlayerID, "with input", e.rawInput);
+            KeyTable.latestInput = e.rawInput;
+            KeyTable.updateKeyStyles();
+        }
+    });
 
-/*bonkAPI.addEventListener("stepEvent", (e) => {
-    for(int i = 0; i < KeyTable.keys) {
+    /*bonkAPI.addEventListener("stepEvent", (e) => {
+        for(int i = 0; i < KeyTable.keys) {
 
-    }
-});*/
+        }
+    });*/
 
-// Event listener for when a user joins the game
-bonkAPI.addEventListener("userJoin", (e) => {
-    //console.log("User join event received", e);
-    //console.log("User ID", e.userID);
-    // Add the player to the player selector
-    KeyTable.create_option(e.userID);
-});
+    // Event listener for when a user joins the game
+    bonkAPI.addEventListener("userJoin", (e) => {
+        //console.log("User join event received", e);
+        //console.log("User ID", e.userID);
+        // Add the player to the player selector
+        KeyTable.create_option(e.userID);
+    });
 
-// Event listener for when a user leaves the game
-bonkAPI.addEventListener("userLeave", (e) => {
-    //console.log("User Leave event received", e);
-    //console.log("User ID", e.userID);
-    // Remove the player from the player selector
-    let playerName = bonkAPI.getPlayerNameByID(e.userID);
-    let player_selector = document.getElementById("player_selector");
-    // If the player is the current player, set the current player to 0 and reset the selector
-    if (player_selector.options[player_selector.selectedIndex].value === playerName) {
+    // Event listener for when a user leaves the game
+    bonkAPI.addEventListener("userLeave", (e) => {
+        //console.log("User Leave event received", e);
+        //console.log("User ID", e.userID);
+        // Remove the player from the player selector
+        let playerName = bonkAPI.getPlayerNameByID(e.userID);
+        let player_selector = document.getElementById("player_selector");
+        // If the player is the current player, set the current player to 0 and reset the selector
+        if (player_selector.options[player_selector.selectedIndex].value === playerName) {
+            KeyTable.currentPlayerID = bonkAPI.getMyID();
+            // Set the selector to the first option as default
+            player_selector.selectedIndex = 0;
+        }
+
+        KeyTable.remove_option(e.userID);
+    });
+
+    // Event listener for when user(mod user) creates a room
+    bonkAPI.addEventListener("createRoom", (e) => {
+        //console.log("create Room event received", e);
+        //console.log("User ID", e);
+        // Set the player name in the player selector to the current user
+        let option = document.getElementById("selector_option_user");
+        let playerName = bonkAPI.getPlayerNameByID(e.userID);
+        option.textContent = playerName;
+        option.value = e.userID;
+        KeyTable.currentPlayerID = e.userID;
+        // Reset the player selector to the default state
+        KeyTable.reset_selector();
+    });
+
+    // Event listener for when user(mod user) joins a room
+    bonkAPI.addEventListener("joinRoom", (e) => {
+        //console.log("on Join event received", e);
+        //console.log("User ID", e.userID);
+        // Set the player name in the player selector to the current user
+        let option = document.getElementById("selector_option_user");
+        let playerName = bonkAPI.getPlayerNameByID(bonkAPI.getMyID());
+        option.textContent = playerName;
+        option.value = bonkAPI.getMyID();
         KeyTable.currentPlayerID = bonkAPI.getMyID();
-        // Set the selector to the first option as default
-        player_selector.selectedIndex = 0;
-    }
-
-    KeyTable.remove_option(e.userID);
-});
-
-// Event listener for when user(mod user) creates a room
-bonkAPI.addEventListener("createRoom", (e) => {
-    //console.log("create Room event received", e);
-    //console.log("User ID", e);
-    // Set the player name in the player selector to the current user
-    let option = document.getElementById("selector_option_user");
-    let playerName = bonkAPI.getPlayerNameByID(e.userID);
-    option.textContent = playerName;
-    option.value = e.userID;
-    KeyTable.currentPlayerID = e.userID;
-    // Reset the player selector to the default state
-    KeyTable.reset_selector();
-});
-
-// Event listener for when user(mod user) joins a room
-bonkAPI.addEventListener("joinRoom", (e) => {
-    //console.log("on Join event received", e);
-    //console.log("User ID", e.userID);
-    // Set the player name in the player selector to the current user
-    let option = document.getElementById("selector_option_user");
-    let playerName = bonkAPI.getPlayerNameByID(bonkAPI.getMyID());
-    option.textContent = playerName;
-    option.value = bonkAPI.getMyID();
-    KeyTable.currentPlayerID = bonkAPI.getMyID();
-    // Update the player list in the player selector
-    KeyTable.update_players();
-});
+        // Update the player list in the player selector
+        KeyTable.update_players();
+    });
+};
 
 // Main function to construct and add the key table UI to the DOM
 const addKeyTable = () => {
@@ -378,6 +380,7 @@ const addKeyTable = () => {
 
 // Initialization logic to set up the UI once the document is ready
 const init = () => {
+    addEvents();
     addKeyTable();
     let playerSelector = document.getElementById("player_selector");
     if (playerSelector) {
@@ -387,8 +390,41 @@ const init = () => {
     }
 };
 
-if (document.readyState === "complete" || document.readyState === "interactive") {
-    init();
-} else {
-    document.addEventListener("DOMContentLoaded", init);
-}
+// !Loaders:
+// Function to ensure bonkAPI is loaded or timeout after a set duration
+const ensureBonkAPI = async (timeout = 5000, retryInterval = 100) => {
+    const maxRetries = Math.ceil(timeout / retryInterval);
+    let retries = 0;
+
+    while (!window.bonkAPI && retries < maxRetries) {
+        console.warn(`bonkAPI not found. Retrying (${retries + 1}/${maxRetries})...`);
+        await new Promise((resolve) => setTimeout(resolve, retryInterval));
+        retries++;
+    }
+
+    if (!window.bonkAPI) {
+        alert("BonkAPI is not loaded or installed. Please ensure BonkAPI is installed and try again.");
+        console.error("Failed to load bonkAPI after multiple retries.");
+        return false;
+    }
+
+    return true;
+};
+
+// Function to handle document readiness and initialize the mod
+KeyTable.onDocumentReady = async () => {
+    if (document.readyState === "complete" || document.readyState === "interactive") {
+        if (await ensureBonkAPI()) {
+            init();
+        }
+    } else {
+        document.addEventListener("DOMContentLoaded", async () => {
+            if (await ensureBonkAPI()) {
+                init();
+            }
+        });
+    }
+};
+
+// Call the function to check document readiness and initialize the mod
+KeyTable.onDocumentReady();
